@@ -1,0 +1,67 @@
+<html>
+
+<head>
+
+
+</head>
+
+
+<body>
+Diese Seite auswählen und dann sollte man mit den Pfeiltasten steuern können.
+
+
+</body>
+
+<script>
+
+
+function httpGet(theUrl) {
+  let xmlHttpReq = new XMLHttpRequest();
+  xmlHttpReq.open("GET", theUrl, false); 
+  xmlHttpReq.send(null);
+  return xmlHttpReq.responseText;
+};
+
+oldValue = -1;
+
+function flipflop(value)
+{
+    if(value == oldValue)
+    {
+        return false;
+    }
+    oldValue = value;
+    return true;
+};
+
+
+
+
+
+window.addEventListener("keyup", function(e) {
+    console.log('keyup' + e.keyCode);
+    if(e.keyCode >= 37 && e.keyCode <= 40)
+    {
+        if(flipflop('keyup' + e.keyCode))
+        {
+            console.log("send request");
+            httpGet("http://192.168.178.45/keyUp=" + e.keyCode);
+        }
+    }
+});
+
+window.addEventListener("keydown", function(e) {
+    console.log('keydown' + e.keyCode);
+    if(e.keyCode >= 37 && e.keyCode <= 40)
+    {
+        if(flipflop('keyup' + e.keyCode))
+        {
+            console.log("send request");
+            httpGet("http://192.168.178.45/keyDown=" + e.keyCode);
+        }
+    }
+});
+
+</script>
+
+</html>
