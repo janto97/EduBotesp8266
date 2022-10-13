@@ -1,7 +1,7 @@
 #include <ESP8266WiFi.h>
  
-const char* ssid = "Gehirnablage 4.0";
-const char* password = "+50cminnach840Pete";
+const char* ssid = "wifiname";
+const char* password = "wifipassword";
 bool softwareAP = true;
 
 int d0 = 16;
@@ -127,12 +127,23 @@ void loop() {
     digitalWrite(d2, LOW);
   }
 
-  client.println("<html><head></head><body>Diese Seite auswählen und dann sollte man mit den Pfeiltasten steuern können.</body><script>");
-  client.println("function httpGet(theUrl) {  let xmlHttpReq = new XMLHttpRequest();  xmlHttpReq.open(\"GET\", theUrl, false);   xmlHttpReq.send(null);  return xmlHttpReq.responseText;};oldValue = -1;");
-  client.println("function flipflop(value){ if(value == oldValue) { return false;  }  oldValue = value; return true;};");
-  client.println("window.addEventListener(\"keyup\", function(e) { console.log('keyup' + e.keyCode); if(e.keyCode >= 37 && e.keyCode <= 40) { if(flipflop('keyup' + e.keyCode)) { console.log(\"send request\"); httpGet(\"http://" + ipAddress + "/keyUp=\" + e.keyCode); } }});");
-  client.println("window.addEventListener(\"keydown\", function(e) {console.log('keydown' + e.keyCode);if(e.keyCode >= 37 && e.keyCode <= 40) { if(flipflop('keydown' + e.keyCode))  { console.log(\"send request\"); httpGet(\"http://" + ipAddress + "/keyDown=\" + e.keyCode); } }});");
-  client.println("</script></html>");
+client.println("<html><head><meta charset=\"UTF-8\"></head><body>Diese Seite auswählen und dann sollte man mit den Pfeiltasten steuern können.<table>");
+client.println("<tr><td></td><td><button onmousedown=\"directionButton(38)\" ontouchstart=\"directionButton(38)\" ontouchend=\"undirectionButton(38)\" type=\"button\">Vor</button></td><td></td></tr>");
+client.println("<tr><td><button ontouchstart=\"directionButton(37)\" ontouchend=\"undirectionButton(37)\" type=\"button\">Links</button></td>");
+client.println("<td><button ontouchstart=\"directionButton(40)\" ontouchend=\"undirectionButton(40)\" type=\"button\">Zurück</button></td>");
+client.println("<td><button ontouchstart=\"directionButton(39)\" ontouchend=\"undirectionButton(39)\" type=\"button\">Rechts</button></td></tr></table></body><script>");
+client.println("function httpGet(theUrl) {  let xmlHttpReq = new XMLHttpRequest();  xmlHttpReq.open(\"GET\", theUrl, false);   xmlHttpReq.send(null);  return xmlHttpReq.responseText;};oldValue = -1;");
+client.println("function flipflop(value){ if(value == oldValue) { return false;  }  oldValue = value; return true;};");
+client.println("function undirectionButton(direction){ sendRequest(direction, \"keyup\")}");
+client.println("function directionButton(direction){ sendRequest(direction, \"keydown\")}");
+client.println("// 38 = up; 37 = left; 39 = right; 40 = back;");
+client.println("function sendRequest(sendcode, keyupordown)");
+client.println("{if(sendcode >= 37 && sendcode <= 40)");
+client.println("{if(flipflop(keyupordown + sendcode)) ");
+client.println("{console.log(keyupordown + sendcode); console.log(\"send request\"); httpGet(\"http://" + ipAddress + "/\" + keyupordown + \"=\" + sendcode);} }}");
+client.println("window.addEventListener(\"keyup\", function(e) { sendRequest(\"keyup\", e.keyCode); });");
+client.println("window.addEventListener(\"keydown\", function(e) {sendRequest(\"keydown\", e.keyCode);});");
+client.println("</script></html>");
 
   delay(1);
   Serial.println("TCP disconnected");
